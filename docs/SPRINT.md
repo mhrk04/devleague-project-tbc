@@ -2,19 +2,23 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Deliver the ProbeLoop Lab 4 submission: a working synthetic Amir click-through driven by a deterministic 80-member retention engine, with calculated experiment metrics, within a four-hour feature freeze.
+**Goal:** Deliver the ProbeLoop Lab 4 submission: a focused operator retention dashboard driven by a deterministic 80-member retention engine, with Amir's case as the drill-down and calculated experiment metrics, within a four-hour feature freeze.
 
 **Architecture:** Keep the Next.js App Router scaffold. The operator and customer pages render from a deterministic synthetic dataset and calculated logic modules, not from hard-coded cohort numbers. URL state carries the simulated outcome. No backend, database, auth, LLM, or store is added.
 
-**Tech Stack:** Next.js 16, React 19, TypeScript 5, existing global CSS, `node:test` with `node:assert/strict` for the dependency-free test target.
+**Tech Stack:** Next.js 16, React 19, TypeScript 5, and the existing global CSS.
 
 ---
 
 ## Roles and lanes
 
-- **Lead** owns docs (`docs/PRD.md`, `docs/SPRINT.md`, `docs/PITCH.md`, root `PLAN.md`, root `README.md`), merge and integration, Vercel deployment, validation, the 3-minute video, and submission. The lead avoids feature work unless a lane is blocked.
-- **UI owner** branches `ui/case-file`.
-- **Logic/data owner** branches `logic/retention-engine`.
+The user is both the team lead and the backend and logic-data owner. There is no separate logic teammate.
+
+- **Lead / backend (user):** branches `logic/retention-engine`. Owns the deterministic cohort engine, docs, merge and integration, Vercel deployment, and final submission approval.
+- **UI teammate:** branches `ui/operator-dashboard`. Owns the operator dashboard, the customer-facing probe UI, and responsive and accessibility polish.
+- **Supporting teammate:** owns manual QA at desktop and mobile widths, demo rehearsal, video recording and editing, and the submission checklist. Reports defects and links to the lead. Does not edit product code or planning docs unless the lead explicitly reassigns a file.
+
+The UI teammate builds the dashboard and customer surfaces against the lead's logic. The lead does not build the UI lane, and the UI teammate does not build the logic lane.
 
 ## File ownership matrix
 
@@ -22,55 +26,42 @@ No-overlap rule: a lane edits only its own files. The lead merges and handles do
 
 | Owner | Files |
 | --- | --- |
-| UI owner | `src/app/page.tsx`, `src/app/operator/page.tsx`, `src/app/customer/[customerId]/page.tsx`, `src/components/customer/RetentionCheckIn.tsx`, `src/app/globals.css`. Optionally delete unused `src/components/operator/AtRiskTable.tsx` and `src/components/shared/LinkList.tsx`. |
-| Logic/data owner | `src/lib/types.ts`, `src/lib/risk.ts`, `src/lib/signals.ts`, `src/lib/reasons.ts`, `src/lib/interventions.ts`, `src/lib/experiments.ts`, `src/data/seed.ts`, `src/lib/retention.test.ts`, and only the `test` script in `package.json`. |
-| Lead | docs, `README.md`, `PLAN.md`, merge/integration, Vercel deployment, validation, video, submission. |
+| UI teammate | `src/app/page.tsx`, `src/app/operator/page.tsx`, `src/app/customer/[customerId]/page.tsx`, `src/components/customer/RetentionCheckIn.tsx`, `src/components/operator/AtRiskTable.tsx`, `src/app/globals.css`. Immediate priority is `/operator`, `src/components/operator/AtRiskTable.tsx`, and `src/app/globals.css`. |
+| Lead / backend | `src/lib/types.ts`, `src/lib/risk.ts`, `src/lib/signals.ts`, `src/lib/reasons.ts`, `src/lib/interventions.ts`, `src/lib/experiments.ts`, and `src/data/seed.ts`. Also owns docs, merge/integration, Vercel deployment, and final submission approval. |
+| Supporting teammate | No product-code ownership. Owns manual QA results, rehearsal, video files, and the submission-link checklist. |
 
-Logic/data must not edit app, components, CSS, or docs. UI must not edit `src/lib/**`, `src/data/**`, docs, or package files. Do not build or use `src/lib/store.ts`.
+The logic/data lane must not edit app, components, CSS, or docs. The UI lane must not edit `src/lib/**`, `src/data/**`, docs, or package files. Do not build or use `src/lib/store.ts`.
 
-## Freeze commit (lead), 0:00-0:20
+## Start point
 
-The lead freezes the current working prototype before any parallel work branches from it.
-
-1. Confirm the current prototype is a working static click-through that imports `prototypeStory` from `src/data/seed.ts`.
-2. Run lint and build:
-   ```bash
-   npm run lint && npm run build
-   ```
-3. Commit and push `main`:
-   ```bash
-   git add -A
-   git commit -m "freeze working probeloop prototype"
-   git push origin main
-   ```
-4. Record the exact commit SHA. Teammates branch from that commit, never from an earlier or later one.
+The working Amir click-through is already frozen on `main`. After the corrected teammate context is pushed, every lane starts from the latest `origin/main`. Do not branch from the older prototype commit.
 
 Commit messages are plain lower-case with no conventional prefixes.
 
-## Branching (teammates)
+## Branching (lanes)
 
 UI teammate:
 ```bash
 git fetch origin
-git switch -c ui/case-file origin/main
+git switch -c ui/operator-dashboard origin/main
 ```
 
-Logic/data teammate:
+Lead / backend:
 
 ```bash
 git fetch origin
 git switch -c logic/retention-engine origin/main
 ```
 
-Both lanes work in parallel against the frozen commit.
+Both lanes work in parallel against the latest corrected `origin/main`.
 
 ## Schedule
 
 | Time | Activity |
 | --- | --- |
-| 0:00-0:20 | Freeze current prototype, run lint/build, commit/push `main`. Teammates branch from the exact commit. |
-| 0:20-1:30 | Parallel: UI lane, logic/data lane, and lead docs/deploy setup. |
-| 1:30 | Merge logic. Verify tests, lint, build. |
+| 0:00-0:10 | Fetch the corrected context from `origin/main` and create the two work branches. |
+| 0:10-1:30 | Parallel: UI lane and lead/backend lane. Supporting teammate prepares QA, rehearsal, and video. |
+| 1:30 | Merge logic. Verify lint and build. |
 | 1:45-2:40 | Integrate UI, finalize docs/deploy. |
 | 2:40 | Merge UI and feature freeze. Working software becomes the submission. No new features. |
 | 3:00-3:25 | Deployed verification and rehearsal. |
@@ -328,7 +319,7 @@ export function calculateExperimentMetrics(
   const treatmentSize = treatment.length;
   const holdoutSize = holdout.length;
 
-  // The logic owner supplies post-period returned flags for each assignment.
+  // The lead/backend owner supplies post-period returned flags for each assignment.
   const treatmentReturns = treatment.filter((a) => a.returned).length;
   const holdoutReturns = holdout.filter((a) => a.returned).length;
 
@@ -377,76 +368,19 @@ Generate visit dates deterministically so the same run always produces the same 
 - [ ] Step: confirm `prototypeStory` still exports.
 - [ ] Step: run `npm run lint`; expect exit 0.
 
-### Task L8: dependency-free tests
+### Task L8: commit the lane
 
-**Files:** `src/lib/retention.test.ts`, `package.json`
+No dependency-free tests. Validation for this lane is lint and build only.
 
-Add the test script to `package.json`:
-
-```json
-"test": "node --experimental-strip-types --test src/lib/retention.test.ts"
-```
-
-Write tests using `node:test` and `node:assert/strict`:
-
-```ts
-import { test } from "node:test";
-import assert from "node:assert/strict";
-import { calculateMedianCadence, isVisitLapsed } from "./risk.ts";
-import { assignExperimentGroup, calculateExperimentMetrics } from "./experiments.ts";
-
-test("median cadence returns null with fewer than two visits", () => {
-  assert.equal(calculateMedianCadence(["2025-01-01"]), null);
-});
-
-test("median cadence sorts visits internally", () => {
-  const cadence = calculateMedianCadence([
-    "2025-01-11",
-    "2025-01-01",
-    "2025-01-06",
-  ]);
-  assert.equal(cadence, 5);
-});
-
-test("lapse requires at least four visits", () => {
-  assert.equal(
-    isVisitLapsed(["2025-01-01", "2025-01-05", "2025-01-09"], "2025-02-01"),
-    false,
-  );
-});
-
-test("empty experiment group returns zero rates, not NaN", () => {
-  const metrics = calculateExperimentMetrics([]);
-  assert.equal(metrics.treatmentReturnRate, 0);
-  assert.equal(metrics.holdoutReturnRate, 0);
-  assert.equal(metrics.estimatedIncrementalReturns, 0);
-});
-
-test("assignment is stable for the same customer id", () => {
-  assert.equal(assignExperimentGroup("amir"), assignExperimentGroup("amir"));
-});
-```
-
-The plan must first check the Node version:
-
-```bash
-node --version
-```
-
-The test command requires Node 22.6+. If the venue Node is older, the lead skips only the test command and relies on lint and build. Do not add a dependency under time pressure.
-
-- [ ] Step: add the `test` script to `package.json`.
-- [ ] Step: write `src/lib/retention.test.ts`.
-- [ ] Step: check `node --version` (need 22.6+), then run `npm test`; expect all tests pass.
 - [ ] Step: run `npm run lint && npm run build`; expect exit 0.
 - [ ] Step: commit and push the lane:
   ```bash
-  git add src/lib src/data/seed.ts package.json
+  git add src/lib src/data/seed.ts
   git commit -m "build deterministic retention engine"
   git push -u origin logic/retention-engine
   ```
 
-### Logic merge
+### Logic/data merge
 
 When the logic/data lane is done (around 1:30), the lead merges it into `main` and verifies:
 
@@ -454,31 +388,32 @@ When the logic/data lane is done (around 1:30), the lead merges it into `main` a
 git switch main
 git fetch origin
 git merge --no-ff origin/logic/retention-engine
-npm test
 npm run lint
 npm run build
 ```
 
-Expect tests, lint, and build to pass. The `prototypeStory` export remains so the current click-through still works during integration.
+Expect lint and build to pass. The `prototypeStory` export remains so the current click-through still works during integration.
 
 ---
 
-## UI lane: `ui/case-file`
+## UI lane: `ui/operator-dashboard`
 
-Preserve the approved case-file experience and URL state. The UI consumes calculated outputs from the logic modules; it does not hard-code cohort metrics.
+Build the operator retention dashboard on `/operator`. The current `src/app/operator/page.tsx` contains the reusable Amir case. `src/components/operator/AtRiskTable.tsx` is only an empty ownership boundary and must be implemented as the queue. The lead/backend owner supplies calculated cohort exports; the UI does not hard-code final cohort metrics.
 
-### Task U1: operator case file
+### Task U1: operator dashboard
 
-**Files:** `src/app/operator/page.tsx`
+**Files:** `src/app/operator/page.tsx`, `src/components/operator/AtRiskTable.tsx`, `src/app/globals.css`
 
-- Render Amir's case as a single scroll.
-- Show the cadence change, observed signals as a flat left-ruled list, hypotheses visually separate, and explicit uncertainty as the hero.
-- Explain why a neutral service probe beats blanket discounting.
+Build `/operator` as a focused retention dashboard. No new route.
+
+- Show compact overview metrics: slipping-member count, active probes, and probe-versus-holdout return rates.
+- Show a five-row at-risk member queue using `src/components/operator/AtRiskTable.tsx`.
+- Selecting Amir opens his existing case file as a drill-down with cadence change, observed signals as a flat left-ruled list, hypotheses visually separate, explicit uncertainty as the hero, and why a neutral probe beats discounting.
 - Read `preference` and `outcome` from search params. Support `/operator?preference=queue&outcome=recovered`.
 - In the recovered state, show the stated preference, return, calculated treatment-versus-holdout result, estimated incremental returns, and the operational recommendation.
 - Keep the synthetic-data label visible in both states.
 
-- [ ] Step: implement the operator page using calculated signal and hypothesis functions.
+- [ ] Step: implement the operator dashboard using the existing case file and `AtRiskTable`.
 - [ ] Step: run `npm run lint`; expect exit 0.
 
 ### Task U2: customer check-in
@@ -498,16 +433,16 @@ Preserve the approved case-file experience and URL state. The UI consumes calcul
 
 **Files:** `src/app/page.tsx`, `src/app/globals.css`
 
-- `/` states the thesis and links to the operator case.
+- `/` states the thesis and links to the operator dashboard.
 - Keep the responsive visual system: semantic controls, visible focus, text beyond color, `aria-live`, readable at 375px and 1280px, no animation.
 
 - [ ] Step: implement the entry route and CSS.
 - [ ] Step: run `npm run lint && npm run build`; expect exit 0.
 - [ ] Step: commit and push the lane:
   ```bash
-  git add src/app src/components/customer/RetentionCheckIn.tsx src/components/operator/AtRiskTable.tsx src/components/shared/LinkList.tsx
-  git commit -m "polish the probeloop case file"
-  git push -u origin ui/case-file
+  git add src/app src/components/customer/RetentionCheckIn.tsx src/components/operator/AtRiskTable.tsx
+  git commit -m "build the operator retention dashboard"
+  git push -u origin ui/operator-dashboard
   ```
 
 ### UI merge
@@ -517,7 +452,7 @@ After the logic merge, the lead integrates the UI (around 1:45-2:40). The UI con
 ```bash
 git switch main
 git fetch origin
-git merge --no-ff origin/ui/case-file
+git merge --no-ff origin/ui/operator-dashboard
 npm run lint
 npm run build
 ```
@@ -526,32 +461,28 @@ Working software becomes the submission. No new features after this gate.
 
 ---
 
-## Deployment (lead)
+## Deployment and submission
 
 Deploy via Vercel using the connected GitHub repository, or `npx vercel --prod` only if the CLI is already authenticated. Do not add dependencies for deployment.
 
-Verify the deployed golden path and health endpoint after deploy.
+The lead deploys and fixes integration issues. The supporting teammate verifies the deployed golden path and health endpoint, rehearses and records the video, and checks every submission link. The lead approves and submits the final package.
 
 ## Verification checklist
 
-- Node test passes when `node --version` reports 22.6 or newer:
-  ```bash
-  node --version
-  npm test
-  ```
 - `npm run lint`
 - `npm run build`
 - `git diff --check`
+- Golden-path manual check.
 - Manual checks at 375px and 1280px.
-- Exact golden path: `/` -> `/operator` -> `/customer/amir` -> express pickup -> `/operator?preference=queue&outcome=recovered`.
+- Deployed check matches local check.
+- Exact golden path: `/` -> `/operator` (dashboard overview, Amir selected) -> `/customer/amir` -> express pickup -> `/operator?preference=queue&outcome=recovered` (learned dashboard state).
 - `/customer/unknown` shows the recovery fallback.
 - Unknown query falls back to the initial operator state.
 - `/api/health` returns JSON.
-- Deployed checks match local checks.
 
 ## Merge order
 
-1. Freeze `main` with the working prototype.
-2. Merge `logic/retention-engine` first; verify tests, lint, build.
+1. Branch from the latest corrected `origin/main` context.
+2. Merge `logic/retention-engine` first; verify lint and build.
 3. Integrate UI; finalize docs and deploy.
-4. Merge `ui/case-file` and freeze features.
+4. Merge `ui/operator-dashboard` and freeze features.

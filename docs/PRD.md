@@ -2,7 +2,7 @@
 
 This is the canonical product and design source for the ProbeLoop Lab 4 submission. It defines the product thesis, the golden path, functional requirements, transparent rules, UI design rules, failure states, privacy and honesty boundaries, and acceptance criteria.
 
-The implementation plan lives in `docs/SPRINT.md`. The narrated demo lives in `docs/PITCH.md`.
+The implementation plan lives in `docs/SPRINT.md`. The exact UI handoff lives in `docs/UI-HANDOFF.md`. The narrated demo lives in `docs/PITCH.md`.
 
 ## Product thesis
 
@@ -20,7 +20,7 @@ The result is margin burned on customers who did not need a discount and no sign
 
 ## User
 
-- **Operator:** the cafe owner or manager who reads one customer case file, decides whether to probe or discount, and later sees what the cafe learned from a cohort.
+- **Operator:** the cafe owner or manager who reads the retention dashboard, selects an at-risk member, opens that member's case file, decides whether to probe, and later sees what the cafe learned from a cohort.
 - **Customer:** an identified, opted-in loyalty member whose routine changed. They answer one neutral question and immediately get a useful service action.
 
 Only identified, opted-in loyalty members are in scope. ProbeLoop never tracks anonymous customers.
@@ -36,7 +36,7 @@ Only identified, opted-in loyalty members are in scope. ProbeLoop never tracks a
 
 ## Goals
 
-- Show an operator one regular customer's case as a single scroll: cadence change, observed signals, competing hypotheses, explicit uncertainty, and why a neutral probe beats a blanket discount.
+- Show an operator a focused retention dashboard: compact overview metrics, an at-risk member queue, and one selected customer's case as a drill-down with cadence change, observed signals, competing hypotheses, explicit uncertainty, and why a neutral probe beats a blanket discount.
 - Let the customer answer one neutral question and immediately receive a useful service action.
 - After a simulated return, show a calculated treatment-versus-holdout result and estimated incremental returns.
 - Demonstrate the method with a deterministic synthetic cohort of 80 opted-in members.
@@ -46,14 +46,15 @@ Only identified, opted-in loyalty members are in scope. ProbeLoop never tracks a
 
 - No database, auth, or production messaging.
 - No POS replacement, campaign builder, or LLM.
-- No ML model or generic dashboard.
-- No chart wall, sidebar, stock imagery, glassmorphism, gradients, or new product surfaces.
+- No ML model.
+- No generic KPI wall, chart wall, or unrelated analytics. The dashboard stays focused on the retention loop, never a metrics buffet.
+- No sidebar, stock imagery, glassmorphism, gradients, or unrelated product surfaces.
 - No anonymous tracking.
 - No commercial evidence claims from synthetic data.
 
 ## Golden path
 
-`/` -> `/operator` -> `/customer/amir` -> choose express pickup -> `/operator?preference=queue&outcome=recovered`
+`/` -> `/operator` (dashboard overview, Amir selected) -> `/customer/amir` -> choose express pickup -> `/operator?preference=queue&outcome=recovered` (learned dashboard state)
 
 ## Routes and behavior
 
@@ -61,8 +62,8 @@ Visible routes: `/`, `/operator`, `/customer/amir`, `/api/health`.
 
 | Route | Behavior |
 | --- | --- |
-| `/` | Entry point. States the thesis and links to the operator case. |
-| `/operator` | Single-scroll customer case file for Amir. Shows cadence change, observed signals, competing hypotheses, explicit uncertainty, and why a neutral probe beats discounting. |
+| `/` | Entry point. States the thesis and links to the operator dashboard. |
+| `/operator` | Focused retention dashboard: compact overview metrics, an at-risk member queue, the selected Amir case file as a drill-down with intervention status, and cohort learning. |
 | `/operator?preference=queue&outcome=recovered` | Adds the learned outcome after simulation: stated preference, return, calculated treatment-versus-holdout result, estimated incremental returns, and an operational recommendation. |
 | `/customer/amir` | One neutral question with four options. Selecting one immediately provides a useful service action. |
 | `/api/health` | Health check returning JSON. |
@@ -78,6 +79,15 @@ Visible routes: `/`, `/operator`, `/customer/amir`, `/api/health`.
 - A member is eligible when they have at least 4 visits and days since last visit is at least 2x their median interval.
 - Synthetic post-period outcomes are generated and stored in the dataset.
 - The dataset must preserve the existing `prototypeStory` export until integration, then expose the 80-member cohort.
+
+### Operator dashboard
+
+- Show compact overview metrics: slipping-member count, active probes, and probe-versus-holdout return rates.
+- Show a queue of at-risk members from the deterministic cohort.
+- Selecting a member opens that member's case file as a drill-down with facts, observed signals, and competing hypotheses.
+- The dashboard surfaces a service-probe call to action for the selected member.
+- After a simulated return, the dashboard shows the recovered outcome and one operational recommendation.
+- The case file is a drill-down inside `/operator`; it is not a separate product surface.
 
 ### Detection
 
@@ -129,18 +139,20 @@ At a useful level:
 - `Hypothesis`: label, strength (`strong` | `possible` | `weak`), evidence.
 - `ProbePreference`: `"queue" | "usual" | "new" | "nothing"`.
 - `ServiceAction`: description of the immediate action.
-- `ExperimentAssignment`: customerId, group (`probe` | `holdout`).
+- `ExperimentAssignment`: customerId, group (`probe` | `holdout`), returned.
 - `ExperimentMetrics`: treatment size, holdout size, treatment returns, holdout returns, treatment return rate, holdout return rate, estimated incremental returns.
 
 ## UI design rules
 
 ### Operator
 
-- Single-scroll customer case file, not a dashboard of charts.
+- Focused retention dashboard, not a wall of charts or unrelated analytics.
+- Compact overview metrics sit above the at-risk member queue.
+- Selecting a member opens that member's case file as a drill-down.
 - Facts appear as a flat left-ruled list.
 - Hypotheses are visually separate from observed facts.
 - Explicit uncertainty is the hero: the operator sees what is not known.
-- After simulation, the operator sees the stated preference, return, calculated result, estimated incremental returns, and one operational recommendation.
+- After simulation, the dashboard shows the stated preference, return, calculated result, estimated incremental returns, and one operational recommendation.
 
 ### Customer
 
@@ -180,14 +192,15 @@ At a useful level:
 ## Acceptance criteria
 
 - The golden path works end to end from `/` to `/operator?preference=queue&outcome=recovered`.
-- Amir's case file shows cadence change, observed signals, competing hypotheses, explicit uncertainty, and the probe-versus-discount rationale.
+- `/operator` shows compact overview metrics, an at-risk member queue, and Amir's selected case file with intervention status.
+- Amir's drill-down case shows cadence change, observed signals, competing hypotheses, explicit uncertainty, and the probe-versus-discount rationale.
 - The customer sees one neutral question and receives an immediate useful action.
 - The learned outcome shows the stated preference, return, calculated treatment-versus-holdout result, estimated incremental returns, and an operational recommendation.
 - Metrics are calculated from the deterministic 80-member cohort, not hard-coded.
 - No churn probability appears anywhere.
 - The synthetic-data caveat is visible in initial and recovered states.
-- Lint and build pass. Node test passes when the venue has Node 22.6 or newer.
+- Lint and build pass.
 
 ## Ruthless cuts
 
-Anything not required to prove the golden path is cut: charts, auth, POS replacement, campaign builder, LLM, ML model, sidebar, animations, stock imagery, and any new product surface. The submission is one working case file with a deterministic cohort engine behind it.
+Anything not required to prove the golden path is cut: a generic KPI wall, chart wall, unrelated analytics, auth, POS replacement, campaign builder, LLM, ML model, sidebar, animations, and stock imagery. The submission is one focused operator retention dashboard with a deterministic cohort engine behind it and Amir's case as the drill-down.

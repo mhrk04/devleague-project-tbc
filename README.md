@@ -6,7 +6,7 @@ Closing line: **Learn before you discount.**
 
 ## Status
 
-A working synthetic Amir click-through exists. All data on screen is synthetic and clearly labelled. It demonstrates the visible detect, question, act, and learn loop. The deterministic 80-member cohort engine is the next build described in `docs/SPRINT.md`.
+A working synthetic Amir case-file click-through exists. All data on screen is synthetic and clearly labelled. The target submission surface is an operator retention dashboard on `/operator`, with Amir's existing case reused as the selected customer drill-down. The dashboard and deterministic 80-member cohort engine are the next builds described in `docs/SPRINT.md`; neither exists yet.
 
 This commit is the local prototype freeze. Submission links (deployed URL and video) are verified at deployment and submission time, not invented here.
 
@@ -22,19 +22,20 @@ npm run dev
 | Route | Surface |
 | --- | --- |
 | `/` | Entry point with the thesis |
-| `/operator` | Amir's single-scroll case file |
+| `/operator` | Current Amir case file; target operator dashboard is defined in `docs/UI-HANDOFF.md` |
 | `/customer/amir` | One-question service probe |
 | `/api/health` | Health check (JSON) |
 
-The golden path is `/` -> `/operator` -> `/customer/amir` -> express pickup -> `/operator?preference=queue&outcome=recovered`.
+The golden path is `/` -> `/operator` (dashboard overview, Amir selected) -> `/customer/amir` -> express pickup -> `/operator?preference=queue&outcome=recovered` (learned dashboard state).
 
 `/demo/transaction` remains from the original scaffold but is not part of the pitch.
 
 ## Current prototype
 
 - `src/data/seed.ts`: the immutable synthetic Amir story.
-- `src/app/*`: operator, customer, home, demo, and health routes.
-- `src/components/customer/RetentionCheckIn.tsx`: the one client component.
+- `src/app/*`: current Amir case file, customer, home, demo, and health routes.
+- `src/components/operator/AtRiskTable.tsx`: empty UI ownership boundary for the at-risk member queue.
+- `src/components/customer/RetentionCheckIn.tsx`: the one-question service probe.
 
 ## Next build
 
@@ -45,12 +46,12 @@ The golden path is `/` -> `/operator` -> `/customer/amir` -> express pickup -> `
 - `src/lib/interventions.ts`: customer choice to immediate service action.
 - `src/lib/experiments.ts`: stable assignment and calculated cohort metrics.
 - `src/data/seed.ts`: retain `prototypeStory` and add the deterministic 80-member cohort.
-- `src/lib/retention.test.ts`: dependency-free tests using `node:test`.
 
 ## Documentation
 
 - `docs/PRD.md`: product requirements and design source.
-- `docs/SPRINT.md`: implementation plan and teammate handoff.
+- `docs/SPRINT.md`: implementation plan and lane handoff.
+- `docs/UI-HANDOFF.md`: exact handoff for the UI owner building the operator dashboard.
 - `docs/PITCH.md`: 3-minute narration and submission checklist.
 - `PLAN.md`: short plan index.
 

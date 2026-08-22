@@ -14,7 +14,7 @@ ProbeLoop treats a changed habit as an open question. It compares each opted-in 
 
 ### 0:45-1:45: Golden-path demo
 
-Open Amir's case. He normally visits every five days and is now well outside that rhythm. We see three observations: his visit gap grew, his recent morning waits were longer, and his usual drink was unavailable twice. Those facts support two explanations, queue friction and availability, but the case plainly says we cannot yet distinguish them. A blanket discount would reveal nothing. Instead, Amir sees one neutral question: what would make your next coffee run better? He can skip the queue, keep his usual available, try something new, or ask for space. Amir chooses express pickup, which immediately becomes a useful service action. We simulate his next visit and return to the operator case.
+The operator dashboard opens with four compact metrics: slipping regulars, active probes, and the probe and holdout return rates. Below sits an at-risk queue of members whose cadence drifted. Amir is first and already selected. Drilling into his case, he normally visits every five days and is now well outside that rhythm. We see three observations: his visit gap grew, his recent morning waits were longer, and his usual drink was unavailable twice. Those facts support two explanations, queue friction and availability, but the case plainly says we cannot yet distinguish them. A blanket discount would reveal nothing. Instead, Amir sees one neutral question: what would make your next coffee run better? He can skip the queue, keep his usual available, try something new, or ask for space. Amir chooses express pickup, which immediately becomes a useful service action. We simulate his next visit and return to the dashboard, now in its recovered state.
 
 ### 1:45-2:20: Calculated synthetic learning and caveat
 
@@ -31,16 +31,18 @@ ProbeLoop is a learning engine for retention, not a discount machine. It preserv
 ## Shot and click list
 
 1. Open `/`. Read the thesis.
-2. Click "Open Amir's case" to `/operator`.
-3. Scroll Amir's single case file: cadence change, observed signals, competing hypotheses, explicit uncertainty.
-4. Read why a neutral probe beats blanket discounting.
-5. Click "Preview Amir's service probe" to `/customer/amir`.
-6. Show the one question and four options.
-7. Click "Help me skip the queue" (express pickup).
-8. Show the immediate confirmation and service action.
-9. Click "Simulate Amir's next visit" to `/operator?preference=queue&outcome=recovered`.
-10. Scroll the learned outcome: stated preference, return, calculated treatment-versus-holdout result, estimated incremental returns, operational recommendation.
-11. Keep the synthetic-data label visible throughout.
+2. Click through to `/operator` (dashboard overview).
+3. Show the compact overview metrics: slipping regulars, active probes, probe and holdout return rates.
+4. Show the at-risk member queue. Amir is first and selected.
+5. Drill into Amir's selected case: cadence change, observed signals, competing hypotheses, explicit uncertainty.
+6. Read why a neutral probe beats blanket discounting.
+7. Click "Preview Amir's service probe" to `/customer/amir`.
+8. Show the one question and four options.
+9. Click "Help me skip the queue" (express pickup).
+10. Show the immediate confirmation and service action.
+11. Click "Simulate Amir's next visit" to `/operator?preference=queue&outcome=recovered`.
+12. Scroll the learned outcome: stated preference, return, calculated treatment-versus-holdout result, estimated incremental returns, operational recommendation.
+13. Keep the synthetic-data label visible throughout.
 
 ## Rehearsal checklist
 
