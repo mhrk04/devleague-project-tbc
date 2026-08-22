@@ -28,6 +28,10 @@ function hashId(id: string): number {
 }
 
 export function assignExperimentGroup(customerId: string): ExperimentGroup {
+  // Amir is the visible golden-path customer and receives a service probe, so
+  // guarantee his assignment regardless of the hash-based split. All other IDs
+  // keep their stable, deterministic hash assignment.
+  if (customerId === "amir") return "probe";
   return hashId(customerId) % 2 === 0 ? "probe" : "holdout";
 }
 
@@ -46,8 +50,13 @@ export function calculateExperimentMetrics(
     treatmentSize === 0 ? 0 : treatmentReturns / treatmentSize;
   const holdoutReturnRate = holdoutSize === 0 ? 0 : holdoutReturns / holdoutSize;
 
+  // Incremental returns are undefined whenever either group is empty, so report
+  // 0 in that case rather than a misleading partial-baseline number. Rates are
+  // already guarded to 0 for empty groups, never NaN.
   const estimatedIncrementalReturns =
-    treatmentReturns - treatmentSize * holdoutReturnRate;
+    treatmentSize === 0 || holdoutSize === 0
+      ? 0
+      : treatmentReturns - treatmentSize * holdoutReturnRate;
 
   return {
     treatmentSize,
