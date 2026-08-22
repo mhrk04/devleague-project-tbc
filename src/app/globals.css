@@ -1,9 +1,14 @@
 :root {
-  --bg: #ffffff;
-  --text: #1a1a1a;
-  --muted: #666666;
-  --border: #e0e0e0;
-  --accent: #2f6fed;
+  --ink: #172019;
+  --muted: #647067;
+  --paper: #f4f1e9;
+  --surface: #fffdf7;
+  --line: #d9ddd5;
+  --leaf: #285f3f;
+  --leaf-soft: #dceadf;
+  --amber: #a65f16;
+  --amber-soft: #f7e7cd;
+  --focus: #1d4ed8;
 }
 
 * {
@@ -17,8 +22,8 @@ body {
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--paper);
+  color: var(--ink);
   font-family:
     system-ui,
     -apple-system,
@@ -30,27 +35,68 @@ body {
   line-height: 1.6;
 }
 
-main {
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Shared surfaces */
+.operator-shell,
+.home-shell {
   max-width: 880px;
   margin: 0 auto;
   padding: 2rem 1.25rem 4rem;
 }
 
+.demo-label {
+  display: inline-block;
+  background: var(--amber-soft);
+  color: var(--amber);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid #e7c79a;
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem;
+}
+
 h1 {
   font-size: 1.75rem;
+  line-height: 1.25;
+  margin: 0.5rem 0 0.75rem;
 }
 
 h2 {
-  font-size: 1.25rem;
-  margin-top: 2rem;
+  font-size: 1.15rem;
+  margin: 0 0 0.75rem;
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 0.25rem 0 0.25rem;
 }
 
 p {
   color: var(--muted);
 }
 
+.lead {
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+
 a {
-  color: var(--accent);
+  color: var(--leaf);
   text-decoration: none;
 }
 
@@ -58,28 +104,281 @@ a:hover {
   text-decoration: underline;
 }
 
-ul.links {
-  list-style: none;
-  padding: 0;
+code {
+  background: var(--leaf-soft);
+  color: var(--leaf);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.85em;
 }
 
-ul.links li {
-  margin: 0.5rem 0;
+/* Buttons and links */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
 }
 
-.card {
-  border: 1px solid var(--border);
-  border-radius: 8px;
+.button:hover {
+  text-decoration: none;
+}
+
+.button.primary {
+  background: var(--leaf);
+  color: #ffffff;
+}
+
+.button.primary:hover {
+  background: #214e33;
+}
+
+.button.secondary {
+  background: transparent;
+  color: var(--leaf);
+  border-color: var(--line);
+}
+
+.button.secondary:hover {
+  background: var(--leaf-soft);
+}
+
+.operator-actions {
+  margin-top: 2rem;
+}
+
+/* Operator investigation */
+.operator-header {
+  margin: 1rem 0 2rem;
+}
+
+.investigation {
+  margin: 0 0 2rem;
+}
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.signal-card,
+.hypothesis-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
   padding: 1rem 1.25rem;
+}
+
+.signal-card p,
+.hypothesis-card p {
+  margin: 0.25rem 0 0;
+}
+
+.signal-kind {
+  display: inline-block;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.strength {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+}
+
+.strength-strong {
+  background: var(--leaf-soft);
+  color: var(--leaf);
+}
+
+.strength-possible {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.uncertainty {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Recovered result */
+.result-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--leaf);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin: 0 0 2rem;
+}
+
+.metric-pair {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
   margin: 1rem 0;
 }
 
-.badge {
-  display: inline-block;
-  background: var(--accent);
-  color: #ffffff;
-  border-radius: 4px;
-  padding: 0.15rem 0.5rem;
-  font-size: 0.8rem;
-  margin-right: 0.4rem;
+.metric {
+  background: var(--leaf-soft);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.metric strong {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--leaf);
+}
+
+.metric span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.recommendation {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Customer surface */
+.customer-shell {
+  background: var(--paper);
+  min-height: 100dvh;
+}
+
+.customer-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  max-width: 520px;
+  margin: 2rem auto;
+  padding: 1.75rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(23, 32, 25, 0.06);
+}
+
+.customer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+}
+
+.customer-greeting {
+  color: var(--ink);
+  font-size: 1.05rem;
+  margin: 0 0 1rem;
+}
+
+.customer-probe h1 {
+  font-size: 1.5rem;
+}
+
+.probe-options {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.probe-option {
+  min-height: 56px;
+  text-align: left;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  cursor: pointer;
+}
+
+.probe-option:hover {
+  border-color: var(--leaf);
+  background: var(--leaf-soft);
+}
+
+.customer-confirmation {
+  text-align: center;
+}
+
+.confirmation-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--leaf-soft);
+  color: var(--leaf);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.customer-confirmation h2 {
+  margin: 0 0 0.5rem;
+}
+
+.customer-confirmation p {
+  max-width: 34ch;
+  margin: 0 auto 1.25rem;
+}
+
+.customer-confirmation .button {
+  width: 100%;
+}
+
+/* Home */
+.home-shell {
+  text-align: left;
+}
+
+.home-shell .button {
+  margin-top: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 680px) {
+  .operator-shell,
+  .home-shell {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .evidence-grid,
+  .metric-pair {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-shell {
+    background: var(--paper);
+  }
+
+  .customer-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 1.25rem 1.25rem 3rem;
+    box-shadow: none;
+  }
 }

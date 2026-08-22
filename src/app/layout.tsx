@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Cafe Retention Demo",
+  title: "ProbeLoop",
   description:
-    "Placeholder scaffold for the cafe retention demo. Brings slipping cafe regulars back without discounting everyone.",
+    "A synthetic cafe retention experiment that learns before it discounts.",
 };
 
 export default function RootLayout({

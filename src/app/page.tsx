@@ -2,31 +2,20 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main>
-      <h1>Cafe Retention Demo</h1>
-      <p>
-        Placeholder index for the cafe retention project. This scaffold exists
-        only to mark ownership boundaries for the team; no retention logic is
-        implemented yet.
+    <main className="home-shell">
+      <p className="eyebrow">Synthetic demo</p>
+      <h1>ProbeLoop</h1>
+      <p className="lead">
+        A cafe retention experiment that learns before it discounts.
       </p>
-
-      <h2>Surfaces</h2>
-      <ul className="links">
-        <li>
-          <Link href="/operator">Operator dashboard</Link>
-        </li>
-        <li>
-          <Link href="/customer/example-customer">
-            Customer check-in and intervention (example customer)
-          </Link>
-        </li>
-        <li>
-          <Link href="/demo/transaction">POS transaction simulator</Link>
-        </li>
-        <li>
-          <Link href="/api/health">Health check (JSON)</Link>
-        </li>
-      </ul>
+      <p>
+        Follow one complete loop: detect a changed habit, hold the uncertainty,
+        ask one useful question, act on the answer, and see what the cafe
+        learned.
+      </p>
+      <Link className="button primary" href="/operator">
+        Open Amir&apos;s case
+      </Link>
     </main>
   );
 }
