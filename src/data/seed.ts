@@ -11,7 +11,12 @@
  * Ownership: data and experiment logic team.
  */
 
-import { assignExperimentGroup } from "@/lib/experiments";
+import {
+  assignExperimentGroup,
+  calculateExperimentMetrics,
+  calculateOverview,
+  getAtRiskRows,
+} from "@/lib/experiments";
 import type { Customer, ExperimentAssignment } from "@/lib/types";
 
 /** Fixed reference date for lapse and overview calculations. */
@@ -66,7 +71,9 @@ function buildVisitDates(
   let cursor = last;
   for (let k = 0; k < visitCount; k++) {
     dates.push(toIso(cursor));
-    const jitter = ((hash + k * 5) % 5) - 2; // -2..2 days
+    // Use a coprime step (2) so jitter varies across visits and averages to
+    // ~0 over each full 5-step period, keeping the total span near cadence * count.
+    const jitter = ((hash + k * 2) % 5) - 2; // -2..2 days
     cursor = new Date(cursor.getTime() - (cadence + jitter) * DAY_MS);
   }
   return dates;
@@ -85,6 +92,36 @@ const AMIR_CUSTOMER: Customer = {
     "2026-07-19",
     "2026-07-14",
     "2026-07-09",
+    "2026-07-04",
+    "2026-06-29",
+    "2026-06-24",
+    "2026-06-19",
+    "2026-06-14",
+    "2026-06-09",
+    "2026-06-04",
+    "2026-05-30",
+    "2026-05-25",
+    "2026-05-20",
+    "2026-05-15",
+    "2026-05-10",
+    "2026-05-05",
+    "2026-04-30",
+    "2026-04-25",
+    "2026-04-20",
+    "2026-04-15",
+    "2026-04-10",
+    "2026-04-05",
+    "2026-03-31",
+    "2026-03-26",
+    "2026-03-21",
+    "2026-03-16",
+    "2026-03-11",
+    "2026-03-06",
+    "2026-03-01",
+    "2026-02-24",
+    "2026-02-19",
+    "2026-02-14",
+    "2026-02-09",
   ],
   recentWaitMinutes: [12, 15, 15],
   usualUnavailableCount: 2,
@@ -99,7 +136,8 @@ function buildCustomer(index: number): Customer {
   const name = FIRST_NAMES[(index - 1) % FIRST_NAMES.length];
   const usual = DRINKS[hash % DRINKS.length];
   const cadence = 3 + (hash % 7); // 3..9 days
-  const visitCount = 7 + (hash % 5); // 7..11 visits
+  // Enough visits at this cadence to span roughly six months (~180 days).
+  const visitCount = Math.max(4, Math.round(180 / cadence));
   const daysSinceLast = cadence + ((hash >>> 3) % 5); // cadence..cadence+4
   const waitLength = 2 + (hash % 3); // 2..4
   const recentWaitMinutes = Array.from(
@@ -131,6 +169,25 @@ export const experimentAssignments: readonly ExperimentAssignment[] =
     const returned = hash % 10 < (group === "probe" ? 4 : 2);
     return { customerId: customer.id, group, returned };
   });
+
+/**
+ * Calculated cohort views derived from the assignments above, exported so the
+ * operator dashboard can consume them directly instead of recomputing or
+ * hard-coding metrics.
+ */
+export const experimentMetrics = calculateExperimentMetrics(
+  experimentAssignments,
+);
+export const atRiskRows = getAtRiskRows(
+  cohortCustomers,
+  experimentAssignments,
+  asOfDate,
+);
+export const cohortOverview = calculateOverview(
+  cohortCustomers,
+  experimentAssignments,
+  asOfDate,
+);
 
 /**
  * One shared immutable ProbeLoop prototype story.

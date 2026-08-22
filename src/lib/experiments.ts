@@ -93,8 +93,11 @@ export function calculateOverview(
   const slippingMemberCount = customers.filter((customer) =>
     isVisitLapsed(customer.visitDates, asOf),
   ).length;
-  const activeProbes = assignments.filter(
-    (a) => a.group === "probe",
+  // Only currently lapsed/at-risk members assigned to a probe count as active.
+  const activeProbes = customers.filter(
+    (customer) =>
+      isVisitLapsed(customer.visitDates, asOf) &&
+      assignments.find((a) => a.customerId === customer.id)?.group === "probe",
   ).length;
 
   return {
